@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{04B3DFFA-E79D-44A5-A937-C868BB22F0D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatFusion", "src\ChatFusion\ChatFusion.csproj", "{91D56DDA-3A48-4B87-895A-40A956B44D39}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{1CBCEFC5-F261-4B5E-807D-210DAF1034B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatFusion.Tests", "tests\ChatFusion.Tests\ChatFusion.Tests.csproj", "{4A6EE0EA-5CBD-48B9-A68A-AD6DF027A04B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{91D56DDA-3A48-4B87-895A-40A956B44D39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91D56DDA-3A48-4B87-895A-40A956B44D39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91D56DDA-3A48-4B87-895A-40A956B44D39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91D56DDA-3A48-4B87-895A-40A956B44D39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A6EE0EA-5CBD-48B9-A68A-AD6DF027A04B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A6EE0EA-5CBD-48B9-A68A-AD6DF027A04B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A6EE0EA-5CBD-48B9-A68A-AD6DF027A04B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A6EE0EA-5CBD-48B9-A68A-AD6DF027A04B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{91D56DDA-3A48-4B87-895A-40A956B44D39} = {04B3DFFA-E79D-44A5-A937-C868BB22F0D2}
+		{4A6EE0EA-5CBD-48B9-A68A-AD6DF027A04B} = {1CBCEFC5-F261-4B5E-807D-210DAF1034B2}
+	EndGlobalSection
+EndGlobal
