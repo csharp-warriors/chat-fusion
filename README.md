@@ -5,7 +5,7 @@ Telegram helper in C# (.NET 8) with two parts:
 - **Bot** (Bot API, `Telegram.Bot`) with the commands `/start`, `/help` and `/summary`.
 - **Personal account** (MTProto, `WTelegramClient`) that reads the chat list and unread counts.
 
-When both parts are configured, the bot's `/summary` command sends the owner a summary of unread messages in the personal account.
+When both parts are configured, the bot sends the owner a summary of unread messages in the personal account on its own every few hours, and on request with `/summary`.
 
 ## Setup
 
@@ -18,6 +18,7 @@ All settings come from environment variables:
 | `TG_API_ID`, `TG_API_HASH` | https://my.telegram.org → API development tools |
 | `TG_PHONE` | optional; asked in the console if not set |
 | `TG_SESSION_PATH` | optional, defaults to `account.session` |
+| `TG_SUMMARY_EVERY_HOURS` | optional, defaults to `4`; how often the bot sends the owner an unread summary on its own (`0` turns it off) |
 
 > The session file grants full access to your account. Keep it on your own machine; it is listed in `.gitignore`.
 

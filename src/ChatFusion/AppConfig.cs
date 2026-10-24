@@ -7,7 +7,8 @@ public sealed record AppConfig(
     string? ApiId,
     string? ApiHash,
     string? Phone,
-    string SessionPath)
+    string SessionPath,
+    int SummaryEveryHours)
 {
     public bool HasAccount => !string.IsNullOrEmpty(ApiId) && !string.IsNullOrEmpty(ApiHash);
 
@@ -17,7 +18,8 @@ public sealed record AppConfig(
         ApiId: Env("TG_API_ID"),
         ApiHash: Env("TG_API_HASH"),
         Phone: Env("TG_PHONE"),
-        SessionPath: Env("TG_SESSION_PATH") ?? "account.session");
+        SessionPath: Env("TG_SESSION_PATH") ?? "account.session",
+        SummaryEveryHours: int.TryParse(Env("TG_SUMMARY_EVERY_HOURS"), out var hours) ? hours : 4);
 
     private static string? Env(string name)
     {
