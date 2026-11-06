@@ -12,7 +12,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Api/ChatFusion.TelegramAdapter.csproj", "Api/"]
+COPY ["Api/ChatFusion.TelegramAdapter.Api.csproj", "Api/"]
 RUN dotnet restore "./Api/ChatFusion.TelegramAdapter.Api.csproj"
 COPY . .
 WORKDIR "/src/Api"
