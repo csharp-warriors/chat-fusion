@@ -1,3 +1,18 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".dockerignore" />
+    <File Path="compose.yaml" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="README.md" />
+    <File Path="docs/INTEGRATION.md" />
+  </Folder>
   <Project Path="Api/ChatFusion.Identity.Api.csproj" />
+  <Project Path="Core/ChatFusion.Identity.Core.csproj" />
+  <Project Path="Migrator/ChatFusion.Identity.Migrator.csproj" />
+  <Folder Name="/tests/">
+    <Project Path="UnitTests/ChatFusion.Identity.UnitTests.csproj" />
+    <Project Path="IntegrationTests/ChatFusion.Identity.IntegrationTests.csproj" />
+  </Folder>
 </Solution>

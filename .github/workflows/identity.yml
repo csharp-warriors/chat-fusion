@@ -1,0 +1,44 @@
+name: Identity
+
+on:
+  pull_request:
+    paths:
+      - "Identity/**"
+      - ".github/workflows/identity.yml"
+  push:
+    branches: [develop, main]
+    paths:
+      - "Identity/**"
+      - ".github/workflows/identity.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Identity
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore
+        run: dotnet restore ChatFusion.Identity.slnx
+
+      - name: Build
+        run: dotnet build ChatFusion.Identity.slnx --no-restore --configuration Release
+
+      # Интеграционные тесты поднимают PostgreSQL через Testcontainers: Docker на раннере уже есть
+      - name: Test
+        run: dotnet test ChatFusion.Identity.slnx --no-build --configuration Release
+
+      - name: Docker images
+        run: |
+          docker build --file Api/Dockerfile --tag chatfusion/identity:ci .
+          docker build --file Migrator/Dockerfile --tag chatfusion/identity-migrator:ci .

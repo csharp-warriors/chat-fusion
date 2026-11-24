@@ -1,0 +1,34 @@
+{
+  "profiles": {
+    "migrate (Development)": {
+      "commandName": "Project",
+      "commandLineArgs": "migrate",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "status (Development)": {
+      "commandName": "Project",
+      "commandLineArgs": "status",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "script (Development)": {
+      "commandName": "Project",
+      "commandLineArgs": "script ../identity-migrations.sql",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "migrate (Production)": {
+      "commandName": "Project",
+      "commandLineArgs": "migrate",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "ConnectionStrings__Identity": "Host=localhost;Port=5440;Database=chatfusion_identity;Username=identity;Password=identity_dev"
+      }
+    }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json"
+}
