@@ -1,8 +1,10 @@
 using ChatFusion.TelegramAdapter.Api.Models.Telegram;
 using ChatFusion.TelegramAdapter.Api.Options;
 using ChatFusion.TelegramAdapter.Api.Services;
+using Confluent.Kafka;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using System.Text;
 
 namespace ChatFusion.TelegramAdapter.Api.Controllers;
 
@@ -12,7 +14,7 @@ namespace ChatFusion.TelegramAdapter.Api.Controllers;
 [ApiController]
 [Route("api")]
 [Produces("application/json")]
-public sealed class TelegramController(TelegramService service, IOptionsMonitor<AdapterOptions> adapterOptions, ILogger<TelegramController> logger) : ControllerBase
+public sealed class TelegramController(TelegramService service, IOptionsMonitor<AdapterOptions> adapterOptions, IOptions<KafkaOptions> kafkaOptions, ILogger<TelegramController> logger) : ControllerBase
 {
     #region Constants
 
@@ -26,7 +28,7 @@ public sealed class TelegramController(TelegramService service, IOptionsMonitor<
     #region Actions
 
     /// <summary>
-    /// Webhook для получения обновлений из Telegram
+    /// Webhook для получения сообщений из Telegram
     /// </summary>
     /// <param name="update">Обновление Telegram</param>
     /// <param name="secretToken">Секрет</param>
@@ -50,6 +52,61 @@ public sealed class TelegramController(TelegramService service, IOptionsMonitor<
         return Ok();
     }
 
-    #endregion
+    /// <summary>
+    /// Выводит последнее сообщение из Kafka
+    /// </summary>
+    [HttpGet("kafka/latest")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public IActionResult GetLatestKafkaMessage()
+    {
+        var config = new ConsumerConfig
+        {
+            BootstrapServers = kafkaOptions.Value.BootstrapServers,
+            GroupId = $"telegram-debug-{Guid.NewGuid():N}",
+            AutoOffsetReset = AutoOffsetReset.Earliest,
+            EnableAutoCommit = true,
+        };
 
+        using var consumer = new ConsumerBuilder<string, string>(config).Build();
+        consumer.Subscribe(kafkaOptions.Value.IncomingTopic);
+
+        try
+        {
+            var latest = consumer.Consume(TimeSpan.FromMilliseconds(1000));
+            while (latest is not null)
+            {
+                var next = consumer.Consume(TimeSpan.Zero);
+                if (next is null)
+                {
+                    break;
+                }
+
+                latest = next;
+            }
+
+            if (latest is null)
+            {
+                return NoContent();
+            }
+
+            return Ok(new
+            {
+                latest.Message.Key,
+                latest.Message.Value,
+                Headers = latest.Message.Headers.ToDictionary(
+                    header => header.Key,
+                    header => Encoding.UTF8.GetString(header.GetValueBytes())),
+                latest.Topic,
+                Partition = latest.Partition.Value,
+                Offset = latest.Offset.Value,
+            });
+        }
+        finally
+        {
+            consumer.Close();
+        }
+    }
+
+    #endregion
 }

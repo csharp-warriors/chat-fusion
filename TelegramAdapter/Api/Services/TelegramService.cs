@@ -35,7 +35,7 @@ public enum WebhookHandleResult
 }
 
 /// <summary>
-/// Сервис обработки обновлений Telegram
+/// Сервис обработки сообщений от Telegram
 /// </summary>
 public sealed class TelegramService(IConnectionMultiplexer redis, IProducer<string, string> producer, IOptions<KafkaOptions> kafkaOptions, ILogger<TelegramService> logger)
 {
