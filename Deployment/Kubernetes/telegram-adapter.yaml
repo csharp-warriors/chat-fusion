@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: telegram-adapter
+  labels:
+    app.kubernetes.io/name: telegram-adapter
+    app.kubernetes.io/part-of: chatfusion
+spec:
+  selector:
+    app.kubernetes.io/name: telegram-adapter
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegram-adapter
+  labels:
+    app.kubernetes.io/name: telegram-adapter
+    app.kubernetes.io/part-of: chatfusion
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: telegram-adapter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: telegram-adapter
+        app.kubernetes.io/part-of: chatfusion
+    spec:
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: telegram-adapter
+          image: chatfusion/telegram-adapter:0.2.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: ASPNETCORE_HTTP_PORTS
+              value: "8080"
+            - name: AdapterOptions__BaseUrl
+              valueFrom:
+                secretKeyRef:
+                  name: telegram-adapter
+                  key: base-url
+            - name: AdapterOptions__Token
+              valueFrom:
+                secretKeyRef:
+                  name: telegram-adapter
+                  key: bot-token
+            - name: AdapterOptions__WebhookSecret
+              valueFrom:
+                secretKeyRef:
+                  name: telegram-adapter
+                  key: webhook-secret
+            - name: KafkaOptions__BootstrapServers
+              value: "kafka:9092"
+            - name: KafkaOptions__IncomingTopic
+              value: "chat.incoming"
+            - name: ConnectionStrings__Redis
+              value: "redis:6379"
+          readinessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 384Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
