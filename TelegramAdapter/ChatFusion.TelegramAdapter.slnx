@@ -1,3 +1,6 @@
 <Solution>
   <Project Path="Api/ChatFusion.TelegramAdapter.Api.csproj" />
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
 </Solution>

@@ -6,15 +6,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>3253b925-704d-4455-a8e2-402817923ddf</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <!-- XML-комментарии попадают в OpenAPI-документ и отображаются в Scalar -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Confluent.Kafka" Version="2.16.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.13" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.24.1-preview.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\" />
+    <PackageReference Include="Scalar.AspNetCore" Version="3.0.1" />
+    <PackageReference Include="StackExchange.Redis" Version="3.4.35" />
   </ItemGroup>
 
 </Project>
