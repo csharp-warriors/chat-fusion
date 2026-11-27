@@ -35,6 +35,32 @@ location /docs/hub/      { proxy_pass http://hub_svc/; }
 location /docs/history/  { proxy_pass http://history_svc/; }
 location /docs/max/      { proxy_pass http://max_adapter_svc/; }
 
+location = /identity/scalar {
+    return 308 /identity/scalar/;
+}
+
+location ~ ^/identity/(scalar|openapi)(/.*)?$ {
+    rewrite ^/identity/(.*)$ /$1 break;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Accept-Encoding "";
+    proxy_pass http://identity_svc;
+
+    sub_filter_types text/html application/json;
+    sub_filter_once off;
+    sub_filter '/openapi/v1.json' '/identity/openapi/v1.json';
+    sub_filter '"url":"openapi/v1.json"' '"url":"/identity/openapi/v1.json"';
+    sub_filter '"http://chatfusion.csharp-warriors.ru/"' '"https://chatfusion.csharp-warriors.ru/identity/"';
+    sub_filter '"https://chatfusion.csharp-warriors.ru/"' '"https://chatfusion.csharp-warriors.ru/identity/"';
+}
+
+location ^~ /identity/api/ {
+    rewrite ^/identity/(api/.*)$ /$1 break;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_pass http://identity_svc;
+}
+
 location = /healthz {
     access_log off;
     default_type text/plain;

@@ -94,7 +94,7 @@ spec:
             - name: Cookies__Secure
               value: "true"
             - name: Scalar__Enabled
-              value: "false"
+              value: "true"
           volumeMounts:
             - name: signing-key
               mountPath: /run/secrets/signing
