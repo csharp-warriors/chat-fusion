@@ -52,7 +52,6 @@ app.UseExceptionHandler();
 app.MapOpenApi();
 
 app.MapScalarApiReference(options => options.WithTitle("ChatFusion Telegram Adapter"));
-app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
