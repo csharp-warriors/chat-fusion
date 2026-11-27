@@ -1,0 +1,79 @@
+# ChatFusion.Identity: PostgreSQL, мигратор и сервис.
+# Перед первым запуском:
+#   1. cp .env.example .env и задать пароли;
+#   2. создать секреты (см. README.md): secrets/signing-key.pem и secrets/admin-password.txt.
+# Только база для локальной разработки: docker compose up -d postgres
+
+name: chatfusion-identity
+
+# Gss Encryption Mode=Disable: в chiseled-образах нет библиотеки Kerberos, а внутри сети Docker GSS-шифрование не используется
+x-database-connection: &database-connection
+  ConnectionStrings__Identity: Host=postgres;Port=5432;Database=${POSTGRES_DB:-chatfusion_identity};Username=${POSTGRES_USER:-identity};Password=${POSTGRES_PASSWORD:?Задайте POSTGRES_PASSWORD в .env};Gss Encryption Mode=Disable
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-chatfusion_identity}
+      POSTGRES_USER: ${POSTGRES_USER:-identity}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Задайте POSTGRES_PASSWORD в .env}
+    ports:
+      - "${POSTGRES_PORT:-5440}:5432"
+    volumes:
+      # В образе PostgreSQL 18 данные хранятся в подкаталоге версии, поэтому том монтируется на уровень выше
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  # Отдельный проект ChatFusion.Identity.Migrator: создаёт базу данных, применяет миграции и завершается
+  identity-migrator:
+    image: chatfusion/identity-migrator:local
+    build:
+      context: .
+      dockerfile: Migrator/Dockerfile
+    command: ["migrate"]
+    environment:
+      <<: *database-connection
+      Admin__Email: ${ADMIN_EMAIL:-}
+      Admin__PasswordFile: /run/secrets/identity_admin_password
+    secrets:
+      - identity_admin_password
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  identity-service:
+    image: chatfusion/identity:local
+    build:
+      context: .
+      dockerfile: Api/Dockerfile
+    environment:
+      <<: *database-connection
+      ASPNETCORE_ENVIRONMENT: Production
+      Jwt__Issuer: ${IDENTITY_ISSUER:-http://localhost:5080}
+      Jwt__Audience: ${IDENTITY_AUDIENCE:-chatfusion-api}
+      Jwt__SigningKeyPath: /run/secrets/identity_signing_key
+      Cookies__Secure: ${COOKIES_SECURE:-true}
+      Scalar__Enabled: ${SCALAR_ENABLED:-false}
+    secrets:
+      - identity_signing_key
+    ports:
+      - "${IDENTITY_PORT:-5080}:8080"
+    depends_on:
+      identity-migrator:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+
+secrets:
+  identity_signing_key:
+    file: ./secrets/signing-key.pem
+  identity_admin_password:
+    file: ./secrets/admin-password.txt

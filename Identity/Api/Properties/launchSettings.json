@@ -2,6 +2,8 @@
   "profiles": {
     "http": {
       "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "scalar/v1",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -10,6 +12,8 @@
     },
     "https": {
       "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "scalar/v1",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -18,10 +22,13 @@
     },
     "Container (Dockerfile)": {
       "commandName": "Docker",
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/scalar/v1",
       "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HTTPS_PORTS": "8081",
-        "ASPNETCORE_HTTP_PORTS": "8080"
+        "ASPNETCORE_HTTP_PORTS": "8080",
+        "ConnectionStrings__Identity": "Host=host.docker.internal;Port=5440;Database=chatfusion_identity;Username=identity;Password=identity_dev"
       },
       "publishAllPorts": true,
       "useSSL": true

@@ -1,0 +1,52 @@
+@baseUrl = http://localhost:5044
+@email = user@chatfusion.local
+@password = Str0ng-Passw0rd
+
+### Регистрация
+POST {{baseUrl}}/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### Вход
+# @name login
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### Профиль текущего пользователя
+GET {{baseUrl}}/api/v1/users/me
+Authorization: Bearer {{login.response.body.$.accessToken}}
+
+### Обновление токенов
+# @name refresh
+POST {{baseUrl}}/api/v1/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{login.response.body.$.refreshToken}}"
+}
+
+### Активные сессии
+GET {{baseUrl}}/api/v1/users/me/sessions
+Authorization: Bearer {{refresh.response.body.$.accessToken}}
+
+### Выход
+POST {{baseUrl}}/api/v1/auth/logout
+Authorization: Bearer {{refresh.response.body.$.accessToken}}
+
+### Открытые ключи для других сервисов
+GET {{baseUrl}}/.well-known/jwks.json
+
+### Метаданные издателя
+GET {{baseUrl}}/.well-known/openid-configuration
+
+### Проверка состояния
+GET {{baseUrl}}/health/ready

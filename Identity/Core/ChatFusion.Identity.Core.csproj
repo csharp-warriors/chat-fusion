@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Общая часть сервиса и мигратора: сущности, контекст БД, модель таблиц и правила учётных записей
+    (хеширование паролей, нормализация email). Не зависит от ASP.NET Core.
+  -->
+
+  <ItemGroup>
+    <PackageReference Include="EFCore.NamingConventions" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+  </ItemGroup>
+
+</Project>
